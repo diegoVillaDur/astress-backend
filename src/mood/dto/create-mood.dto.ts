@@ -6,7 +6,7 @@ const MOOD_TAGS = ['EXAMENES', 'FALTA_DE_SUENO', 'PROBLEMAS_PERSONALES', 'CARGA_
 export class CreateMoodDto {
   @IsString()
   @IsIn(MOOD_LEVELS, { message: `El nivel debe ser: ${MOOD_LEVELS.join(', ')}` })
-  level: string;
+  level!: string;
 
   @IsOptional()
   @IsArray()
