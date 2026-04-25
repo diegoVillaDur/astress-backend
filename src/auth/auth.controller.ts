@@ -1,8 +1,7 @@
-import { Controller, Post, Get, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -13,16 +12,13 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
-
   @Post('login')
-  @HttpCode(HttpStatus.OK)
   async login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
 
-
   @Get('me')
-  async getProfile(@CurrentUser() user: any) {
-    return this.authService.getProfile(user.id);
+  async getProfile(@Body() body: { userId: string }) {
+    return this.authService.getProfile(body.userId);
   }
 }

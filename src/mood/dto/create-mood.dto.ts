@@ -4,6 +4,8 @@ const MOOD_LEVELS = ['ATOPE', 'BIEN', 'REGULAR', 'BAJO', 'BURNOUT'];
 const MOOD_TAGS = ['EXAMENES', 'FALTA_DE_SUENO', 'PROBLEMAS_PERSONALES', 'CARGA_DE_TAREAS'];
 
 export class CreateMoodDto {
+  userId!: string;
+
   @IsString()
   @IsIn(MOOD_LEVELS, { message: `El nivel debe ser: ${MOOD_LEVELS.join(', ')}` })
   level!: string;
