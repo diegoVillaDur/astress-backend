@@ -4,10 +4,87 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  career    String?  // Carrera universitaria (opcional)
+  semester  Int?     // Semestre actual (opcional)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  moodEntries MoodEntry[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────
+// ENTRADAS DEL RADAR DE ÁNIMO
+// ─────────────────────────────────────────
+model MoodEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  level     String   // "ATOPE" | "BIEN" | "REGULAR" | "BAJO" | "BURNOUT"
+  tags      String   // JSON string: '["EXAMENES","FALTA_DE_SUENO"]'
+  note      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("mood_entries")
+}
+// ─────────────────────────────────────────
+// FRASES DEL DÍA
+// ─────────────────────────────────────────
+model Quote {
+  id        String   @id @default(cuid())
+  text      String
+  author    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("quotes")
+}
+
+// ─────────────────────────────────────────
+// REFRESH TOKENS (para manejo seguro de sesiones)
+// ─────────────────────────────────────────
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+// ─────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────
+enum MoodLevel {
+  ATOPE      // 😄 A tope (nivel 5)
+  BIEN       // 🙂 Bien (nivel 4)
+  REGULAR    // 😐 Regular (nivel 3)
+  BAJO       // 😔 Bajo (nivel 2)
+  BURNOUT    // 😩 Burnout total (nivel 1)
+}
+
+enum MoodTag {
+  EXAMENES           // Exámenes
+  FALTA_DE_SUENO     // Falta de sueño
+  PROBLEMAS_PERSONALES
+  CARGA_DE_TAREAS    // Carga de tareas
 }

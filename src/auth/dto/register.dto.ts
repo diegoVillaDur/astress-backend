@@ -2,15 +2,15 @@ import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsInt, Min, Max }
 
 export class RegisterDto {
   @IsEmail({}, { message: 'El correo no tiene un formato válido' })
-  email: string;
+  email!: string;
 
   @IsString()
   @IsNotEmpty({ message: 'El nombre es obligatorio' })
-  name: string;
+  name!: string;
 
   @IsString()
   @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
-  password: string;
+  password!: string;
 
   @IsOptional()
   @IsString()
