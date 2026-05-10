@@ -1,22 +1,31 @@
-import { IsIn, IsOptional, IsString, IsArray, MaxLength } from 'class-validator';
-
-const MOOD_LEVELS = ['ATOPE', 'BIEN', 'REGULAR', 'BAJO', 'BURNOUT'];
-const MOOD_TAGS = ['EXAMENES', 'FALTA_DE_SUENO', 'PROBLEMAS_PERSONALES', 'CARGA_DE_TAREAS'];
+import {
+  IsEnum,
+  IsArray,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
+import { MoodLevel, MoodTag } from '@prisma/client';
 
 export class CreateMoodDto {
-  userId!: string;
+  @IsEnum(MoodLevel, {
+    message: `El nivel debe ser uno de: ${Object.values(MoodLevel).join(', ')}`,
+  })
+  level!: MoodLevel;
 
-  @IsString()
-  @IsIn(MOOD_LEVELS, { message: `El nivel debe ser: ${MOOD_LEVELS.join(', ')}` })
-  level!: string;
-
-  @IsOptional()
   @IsArray()
-  @IsIn(MOOD_TAGS, { each: true, message: `Tag inválido. Opciones: ${MOOD_TAGS.join(', ')}` })
-  tags?: string[];
-
+  @IsEnum(MoodTag, {
+    each: true,
+    message: `Cada etiqueta debe ser una de: ${Object.values(MoodTag).join(', ')}`,
+  })
   @IsOptional()
+  tags?: MoodTag[];
+
   @IsString()
-  @MaxLength(500)
+  @MaxLength(500, { message: 'La nota no puede exceder 500 caracteres.' })
+  @IsOptional()
   note?: string;
+
+  @IsString()
+  userId!: string;
 }

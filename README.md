@@ -1,98 +1,265 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# AStress Backend 🧠
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend de la app de bienestar estudiantil **AStress**, construido con **NestJS** y **Prisma ORM** sobre **PostgreSQL**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🗂 Estructura del proyecto
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+```
+astress-backend/
+├── prisma/
+│   ├── schema.prisma        # Modelos de la base de datos
+│   └── seed.ts              # Datos iniciales (salas + frases)
+├── src/
+│   ├── main.ts              # Punto de entrada
+│   ├── app.module.ts        # Módulo raíz
+│   ├── prisma/              # Cliente de Prisma (global)
+│   ├── auth/                # Registro y login
+│   ├── users/               # Perfil e historial del usuario
+│   ├── mood/                # Radar de Ánimo
+│   ├── diary/               # Bitácora de Calma
+│   ├── recommendations/     # Recomendaciones por nivel de ánimo
+│   ├── community/           # Grupos de Apoyo + Muro
+│   └── phrases/             # Frase del día
+├── render.yaml              # Infraestructura en Render
+├── .env.example             # Variables de entorno requeridas
+└── package.json
 ```
 
-## Compile and run the project
+---
+
+## ⚙️ Instalación local
+
+### 1. Clonar e instalar
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone <tu-repo>
+cd astress-backend
+npm install
 ```
 
-## Run tests
+### 2. Configurar variables de entorno
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.example .env
+# Edita .env con tu cadena de conexión a PostgreSQL
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 3. Migrar la base de datos y ejecutar el seed
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx prisma migrate dev --name init
+npm run prisma:seed
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 4. Iniciar el servidor
 
-## Resources
+```bash
+# Desarrollo (hot-reload)
+npm run start:dev
 
-Check out a few resources that may come in handy when working with NestJS:
+# Producción
+npm run build
+npm run start:prod
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+El servidor corre en `http://localhost:3000/api`
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 🚀 Despliegue en Render
 
-## Stay in touch
+### Opción A — Blueprint (render.yaml) ⭐ Recomendada
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+1. Sube el proyecto a GitHub.
+2. En Render → **New** → **Blueprint**.
+3. Conecta tu repositorio.
+4. Render leerá el `render.yaml` y creará automáticamente:
+   - 🐘 Una base de datos PostgreSQL (`astress-db`)
+   - 🌐 Un web service (`astress-backend`)
+5. Haz clic en **Apply** y espera ~3 minutos.
 
-## License
+### Opción B — Manual
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+1. **Base de datos:** Render → New → PostgreSQL → Free → Crear.
+2. **Web Service:** Render → New → Web Service → conecta tu repo.
+   - **Build Command:** `npm install && npx prisma generate && npm run build && npx prisma migrate deploy`
+   - **Start Command:** `npm run start:prod`
+   - **Environment Variable:** `DATABASE_URL` → pegar la "Internal Connection String" de tu DB de Render.
+3. Deploy.
+
+### Seed en producción
+
+Después del primer deploy, ejecutar el seed desde la terminal de Render o localmente apuntando a la DB de producción:
+
+```bash
+DATABASE_URL="<tu-connection-string-de-render>" npm run prisma:seed
+```
+
+---
+
+## 📡 API Reference
+
+Todos los endpoints tienen el prefijo `/api`.
+
+---
+
+### 🔐 Auth
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/api/auth/register` | Registrar usuario |
+| POST | `/api/auth/login` | Iniciar sesión |
+
+**POST /api/auth/register**
+```json
+{
+  "name": "María López",
+  "email": "maria@universidad.mx",
+  "password": "mipassword123"
+}
+```
+
+**POST /api/auth/login**
+```json
+{
+  "email": "maria@universidad.mx",
+  "password": "mipassword123"
+}
+```
+Respuesta: `{ message, user: { id, name, email, createdAt } }`
+
+> ℹ️ El `id` del usuario devuelto en el login se usa como `userId` en el resto de los endpoints.
+
+---
+
+### 👤 Usuarios
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/users/:id` | Perfil del usuario |
+| GET | `/api/users/:id/mood-history` | Historial de ánimo últimos 7 días |
+
+---
+
+### 😊 Radar de Ánimo
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/api/mood` | Registrar estado de ánimo |
+| GET | `/api/mood/user/:userId` | Todas las entradas del usuario |
+| GET | `/api/mood/user/:userId/latest` | Última entrada |
+| DELETE | `/api/mood/:id` | Eliminar entrada |
+
+**POST /api/mood**
+```json
+{
+  "level": "MAL",
+  "tags": ["EXAMENES", "FALTA_DE_SUENO"],
+  "note": "Tengo parcial mañana y no dormí.",
+  "userId": "clxxx123"
+}
+```
+
+**Valores de `level`:**
+- `A_TOPE` — Excelente 🚀
+- `BIEN` — Bien 😊
+- `REGULAR` — Regular 😐
+- `MAL` — Mal 😞
+- `BURNOUT_TOTAL` — Burnout total 🔥
+
+**Valores de `tags`:**
+- `EXAMENES`
+- `FALTA_DE_SUENO`
+- `PROBLEMAS_PERSONALES`
+- `CARGA_DE_TAREAS`
+
+---
+
+### 📓 Bitácora de Calma (Diario)
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/api/diary` | Crear entrada de diario |
+| GET | `/api/diary/user/:userId` | Todas las entradas del usuario |
+| GET | `/api/diary/:id` | Obtener una entrada |
+| PATCH | `/api/diary/:id` | Actualizar entrada |
+| DELETE | `/api/diary/:id` | Eliminar entrada |
+
+**POST /api/diary**
+```json
+{
+  "content": "Hoy fue muy difícil pero lo logré.",
+  "userId": "clxxx123"
+}
+```
+
+---
+
+### 💡 Recomendaciones
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/recommendations/levels` | Lista de niveles disponibles |
+| GET | `/api/recommendations/:moodLevel` | Recomendaciones por nivel |
+
+**Ejemplo:** `GET /api/recommendations/BURNOUT_TOTAL`
+
+Respuesta incluye: tipo (`respiracion`, `descanso`, `tecnica`, `contenido`, `general`), título, descripción, duración y links a YouTube.
+
+---
+
+### 👥 Comunidad
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/community/rooms` | Listar salas |
+| POST | `/api/community/rooms` | Crear sala |
+| GET | `/api/community/rooms/:id` | Ver sala |
+| GET | `/api/community/rooms/:roomId/posts` | Posts de una sala |
+| POST | `/api/community/posts` | Publicar en el muro |
+| DELETE | `/api/community/posts/:id` | Eliminar post |
+| POST | `/api/community/posts/:postId/heart` | Toggle corazón ❤️ |
+
+**POST /api/community/posts**
+```json
+{
+  "content": "Hoy no puedo más con la tesis 😭",
+  "isAnonymous": true,
+  "userId": "clxxx123",
+  "roomId": "room-id-aqui"
+}
+```
+
+**POST /api/community/posts/:postId/heart**
+```json
+{
+  "userId": "clxxx123"
+}
+```
+
+---
+
+### 💬 Frase del Día
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/phrases/today` | Frase del día (consistente) |
+| GET | `/api/phrases/random` | Frase aleatoria |
+| GET | `/api/phrases` | Todas las frases |
+| POST | `/api/phrases` | Agregar frase |
+| DELETE | `/api/phrases/:id` | Eliminar frase |
+
+---
+
+## 🛠 Stack
+
+| Tecnología | Versión | Uso |
+|------------|---------|-----|
+| NestJS | ^10.x | Framework backend |
+| Prisma ORM | ^6.x | ORM + migraciones |
+| PostgreSQL | 15+ | Base de datos |
+| bcryptjs | ^2.4.3 | Hash de contraseñas |
+| class-validator | ^0.14 | Validación de DTOs |
+| Render | — | Hosting + DB |

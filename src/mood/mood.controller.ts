@@ -1,23 +1,51 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
 import { MoodService } from './mood.service';
 import { CreateMoodDto } from './dto/create-mood.dto';
 
 @Controller('mood')
 export class MoodController {
-  constructor(private moodService: MoodService) {}
+  constructor(private readonly moodService: MoodService) {}
 
+  /**
+   * POST /api/mood
+   * Registrar un nuevo estado de ánimo (Radar de Ánimo)
+   */
   @Post()
-  async create(@Body() dto: CreateMoodDto) {
-    return this.moodService.create(dto.userId, dto);
+  create(@Body() dto: CreateMoodDto) {
+    return this.moodService.create(dto);
   }
 
-  @Get('week')
-  async getWeekHistory(@Body() body: { userId: string }) {
-    return this.moodService.getWeekHistory(body.userId);
+  /**
+   * GET /api/mood/user/:userId
+   * Todas las entradas de ánimo de un usuario
+   */
+  @Get('user/:userId')
+  findByUser(@Param('userId') userId: string) {
+    return this.moodService.findByUser(userId);
   }
 
-  @Get('today')
-  async getTodayEntry(@Body() body: { userId: string }) {
-    return this.moodService.getTodayEntry(body.userId);
+  /**
+   * GET /api/mood/user/:userId/latest
+   * Última entrada de ánimo del usuario
+   */
+  @Get('user/:userId/latest')
+  findLatest(@Param('userId') userId: string) {
+    return this.moodService.findLatest(userId);
+  }
+
+  /**
+   * DELETE /api/mood/:id
+   * Eliminar una entrada de ánimo
+   */
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.moodService.remove(id);
   }
 }

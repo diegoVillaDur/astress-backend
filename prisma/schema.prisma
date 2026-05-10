@@ -6,56 +6,98 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String
   name      String
-  career    String? // Carrera universitaria (opcional)
-  semester  Int? // Semestre actual (opcional)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relaciones
-  moodEntries MoodEntry[]
-
-  @@map("users")
-}
-
-model MoodEntry {
-  id        String   @id @default(cuid())
-  userId    String
-  level     String // "ATOPE" | "BIEN" | "REGULAR" | "BAJO" | "BURNOUT"
-  tags      String // JSON string: '["EXAMENES","FALTA_DE_SUENO"]'
-  note      String?
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("mood_entries")
-}
-
-model Quote {
-  id        String   @id @default(cuid())
-  text      String
-  author    String?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-
-  @@map("quotes")
+  moodEntries    MoodEntry[]
+  diaryEntries   DiaryEntry[]
+  communityPosts CommunityPost[]
+  postHearts     PostHeart[]
 }
 
 enum MoodLevel {
-  ATOPE // 😄 A tope (nivel 5)
-  BIEN // 🙂 Bien (nivel 4)
-  REGULAR // 😐 Regular (nivel 3)
-  BAJO // 😔 Bajo (nivel 2)
-  BURNOUT // 😩 Burnout total (nivel 1)
+  ATOPE          // 5 - Excelente
+  BIEN            // 4 - Bien
+  REGULAR         // 3 - Más o menos
+  MAL             // 2 - Mal
+  BURNOUT   // 1 - Burnout
 }
 
 enum MoodTag {
-  EXAMENES // Exámenes
-  FALTA_DE_SUENO // Falta de sueño
+  EXAMENES
+  FALTA_DE_SUENO
   PROBLEMAS_PERSONALES
-  CARGA_DE_TAREAS // Carga de tareas
+  CARGA_DE_TAREAS
+}
+
+model MoodEntry {
+  id        String     @id @default(cuid())
+  level     MoodLevel
+  tags      MoodTag[]
+  note      String?    // Nota opcional junto al registro de ánimo
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model DiaryEntry {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model DailyPhrase {
+  id        String   @id @default(cuid())
+  text      String
+  author    String?
+  createdAt DateTime @default(now())
+}
+
+model CommunityRoom {
+  id          String          @id @default(cuid())
+  name        String          @unique
+  description String?
+  posts       CommunityPost[]
+  createdAt   DateTime        @default(now())
+}
+
+model CommunityPost {
+  id          String        @id @default(cuid())
+  content     String
+  isAnonymous Boolean       @default(false)
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roomId      String
+  room        CommunityRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  hearts      PostHeart[]
+  createdAt   DateTime      @default(now())
+
+  @@index([roomId])
+  @@index([userId])
+}
+
+model PostHeart {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+
+  @@unique([userId, postId]) // Un usuario solo puede dar un corazón por post
 }

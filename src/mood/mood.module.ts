@@ -4,6 +4,6 @@ import { MoodService } from './mood.service';
 
 @Module({
   controllers: [MoodController],
-  providers: [MoodService]
+  providers: [MoodService],
 })
 export class MoodModule {}

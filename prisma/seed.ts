@@ -1,78 +1,69 @@
-import { PrismaClient } from "@prisma/client/extension";
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const quotes = [
-    {
-        text: 'No tienes que ser perfecto para ser increíble.',
-        author: null,
-    },
-    {
-        text: 'Está bien no estar bien. Lo importante es seguir.',
-        author: null,
-    },
-    {
-        text: 'Cada día es una nueva oportunidad para empezar.',
-        author: null,
-    },
-    {
-        text: 'Tu esfuerzo de hoy es la base de tu éxito de mañana.',
-        author: null,
-    },
-    {
-        text: 'Descansa si necesitas, pero no te rindas.',
-        author: null,
-    },
-    {
-        text: 'El agotamiento no es una señal de fracaso, es una señal de que necesitas cuidarte.',
-        author: null,
-    },
-    {
-        text: 'Un paso a la vez. No tienes que resolverlo todo hoy.',
-        author: null,
-    },
-    {
-        text: 'Mereces el mismo cuidado que le das a los demás.',
-        author: null,
-    },
-    {
-        text: 'Pedir ayuda es una fortaleza, no una debilidad.',
-        author: null,
-    },
-    {
-        text: 'Los exámenes son temporales. Tu bienestar es permanente.',
-        author: null,
-    },
-];
-
 async function main() {
-    console.log('🌱 Sembrando base de datos...');
+  console.log('🌱 Ejecutando seed...');
 
-    for (const quote of quotes) {
-        await prisma.quote.upsert({
-            where: { id: quote.text.slice(0, 10) }, // simple trick
-            update: {},
-            create: quote,
-        });
-    }
+  const rooms = [
+    {
+      name: 'Sobreviviendo a la Tesis',
+      description: 'Para quienes están en el proceso de titulación y necesitan apoyo.',
+    },
+    {
+      name: 'Ansiedad de Exámenes',
+      description: 'Comparte estrategias y recibe aliento antes de cada parcial o final.',
+    },
+    {
+      name: 'Primeros Semestres',
+      description: 'El inicio de la carrera puede ser abrumador. Aquí no estás solo.',
+    },
+    {
+      name: 'Descanso y Autocuidado',
+      description: 'Hablemos de dormir bien, alimentarnos y hacer pausas.',
+    },
+    {
+      name: 'Muro de Apoyo General',
+      description: 'Publica lo que sientes. La comunidad está aquí para escucharte.',
+    },
+  ];
 
-    // Más simple: solo insertar si no hay quotes
-    const count = await prisma.quote.count();
-    if (count === 0) {
-        await prisma.quote.createMany({ data: quotes });
-        console.log(`✅ ${quotes.length} frases del día insertadas`);
-    } else {
-        console.log(`ℹ️  Ya existen ${count} frases, no se sobreescribieron`);
-    }
+  for (const room of rooms) {
+    await prisma.communityRoom.upsert({
+      where: { name: room.name },
+      update: {},
+      create: room,
+    });
+  }
 
-    console.log('✅ Seed completado');
+  const phrases = [
+    { text: 'No tienes que tenerlo todo resuelto hoy. Un paso a la vez.', author: 'Anónimo' },
+    { text: 'Pedir ayuda no es debilidad, es inteligencia emocional.', author: 'Anónimo' },
+    { text: 'El descanso no es rendirse, es recargarse.', author: 'Anónimo' },
+    { text: 'Eres más que tus calificaciones.', author: 'Anónimo' },
+    { text: 'Los días difíciles también pasan.', author: 'Anónimo' },
+    { text: 'Está bien no estar bien. Pero no tienes que estarlo solo/a.', author: 'AStress' },
+    { text: 'Tu salud mental importa más que cualquier entrega.', author: 'Anónimo' },
+    {
+      text: 'El éxito no es lineal. Los tropiezos forman parte del camino.',
+      author: 'Anónimo',
+    },
+  ];
+
+  for (const phrase of phrases) {
+    await prisma.dailyPhrase.create({ data: phrase });
+  }
+
+  console.log('✅ Seed completado.');
+  console.log(`   • ${rooms.length} salas de comunidad creadas`);
+  console.log(`   • ${phrases.length} frases del día creadas`);
 }
 
 main()
-    .catch((e) => {
-        console.error(e);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+  .catch((e) => {
+    console.error('❌ Error en seed:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

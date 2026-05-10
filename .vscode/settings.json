@@ -1,4 +1,6 @@
 {
     "material-icon-theme.activeIconPack": "nest",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
     "prisma.pinToPrisma6": false
 }

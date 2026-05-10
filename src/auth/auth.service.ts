@@ -1,98 +1,83 @@
-import {
-    Injectable,
-    ConflictException,
-    UnauthorizedException
-} from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
-    constructor(private prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) { }
 
-    // ── REGISTRO ──────────────────────────────────────────────
-    async register(dto: RegisterDto) {
-        // 1. Verificar que el correo no esté registrado
-        const existing = await this.prisma.user.findUnique({
-            where: { email: dto.email.toLowerCase() },
-        });
+  // ── Registro ────────────────────────────────────────────────────
+  async register(dto: RegisterDto) {
+    // Verificar si el email ya existe
+    const existing = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
 
-        if (existing) {
-            throw new ConflictException('Ya existe una cuenta con este correo');
-        }
-
-        // 3. Crear usuario
-        const user = await this.prisma.user.create({
-            data: {
-                email: dto.email.toLowerCase(),
-                name: dto.name.trim(),
-                password: dto.password,
-                career: dto.career?.trim() ?? null,
-                semester: dto.semester ?? null,
-            },
-            select: {
-                id: true,
-                email: true,
-                name: true,
-                career: true,
-                semester: true,
-                createdAt: true,
-            },
-        });
-
-        return {
-            message: '¡Bienvenido ',
-            user,
-        };
+    if (existing) {
+      throw new ConflictException('Ya existe una cuenta con ese correo electrónico.');
     }
 
-    // ── LOGIN ─────────────────────────────────────────────────
-    async login(dto: LoginDto) {
-        // 1. Buscar usuario
-        const user = await this.prisma.user.findUnique({
-            where: { email: dto.email.toLowerCase() },
-        });
+    const user = await this.prisma.user.create({
+      data: {
+        name: dto.name,
+        email: dto.email,
+        password: dto.password,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+      },
+    });
 
-        if (!user) {
-            throw new UnauthorizedException('Correo o contraseña incorrectos');
-        }
+    return {
+      message: '¡Cuenta creada exitosamente! Bienvenido/a a AStress.',
+      user,
+    };
+  }
 
-        if (dto.password != user.password) {
-            throw new UnauthorizedException('Correo o contraseña incorrectos');
-        }
+  // ── Login ───────────────────────────────────────────────────────
+  async login(dto: LoginDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
 
-        return {
-            message: 'Sesión iniciada correctamente',
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                career: user.career,
-                semester: user.semester,
-            },
-        };
+    if (!user) {
+      throw new UnauthorizedException('Correo o contraseña incorrectos.');
     }
 
-    // ── PERFIL ────────────────────────────────────────────────
-    async getProfile(userId: string) {
-        const user = await this.prisma.user.findUnique({
-            where: { id: userId },
-            select: {
-                id: true,
-                email: true,
-                name: true,
-                career: true,
-                semester: true,
-                createdAt: true,
-                _count: {
-                    select: { moodEntries: true },
-                },
-            },
-        });
-
-        if (!user) throw new UnauthorizedException('Usuario no encontrado');
-
-        return user;
+    if (dto.password != user.password) {
+      throw new UnauthorizedException('Correo o contraseña incorrectos');
     }
+
+    return {
+      message: 'Sesión iniciada correctamente',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      },
+    };
+  }
+
+  async getProfile(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        _count: {
+          select: { moodEntries: true },
+        },
+      },
+    });
+
+    if (!user) throw new UnauthorizedException('Usuario no encontrado');
+
+    return user;
+  }
 }

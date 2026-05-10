@@ -1,24 +1,16 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsInt, Min, Max } from 'class-validator';
+import { IsEmail, IsString, MinLength, MaxLength } from 'class-validator';
 
 export class RegisterDto {
-  @IsEmail({}, { message: 'El correo no tiene un formato válido' })
+  @IsString({ message: 'El nombre debe ser texto.' })
+  @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres.' })
+  @MaxLength(100, { message: 'El nombre no puede exceder 100 caracteres.' })
+  name!: string;
+
+  @IsEmail({}, { message: 'Ingresa un correo electrónico válido.' })
   email!: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'El nombre es obligatorio' })
-  name!: string;
-
-  @IsString()
-  @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
+  @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres.' })
+  @MaxLength(50, { message: 'La contraseña no puede exceder 50 caracteres.' })
   password!: string;
-
-  @IsOptional()
-  @IsString()
-  career?: string; // Carrera universitaria
-
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Max(15)
-  semester?: number; // Semestre actual
 }
