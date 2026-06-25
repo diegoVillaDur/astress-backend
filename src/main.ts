@@ -14,11 +14,7 @@ async function bootstrap() {
     }),
   );
 
-  app.enableCors({
-    origin: 'https://astress-frontend.vercel.app/',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  });
+  app.enableCors({ origin: '*' }); // solo para prueba, no dejes esto en producción
 
   await app.listen(3000);
 }
