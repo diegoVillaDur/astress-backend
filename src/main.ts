@@ -14,9 +14,16 @@ async function bootstrap() {
     }),
   );
 
-  app.enableCors({ origin: '*' }); // solo para prueba, no dejes esto en producción
+  app.setGlobalPrefix('api'); // ← esto faltaba
 
-  await app.listen(3000);
+  app.enableCors({
+    origin: ['https://astress-frontend.vercel.app', 'http://localhost:4200'],
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
+
+  await app.listen(process.env.PORT ?? 3000); // ← Render asigna el puerto dinámicamente
 }
 
 bootstrap();
